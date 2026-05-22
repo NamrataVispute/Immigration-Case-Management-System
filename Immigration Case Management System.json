@@ -1,0 +1,3781 @@
+{
+  "name": "Immigration Case Management System",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -12048,
+        416
+      ],
+      "id": "a9d56d4c-7a16-483a-9a6d-bb036014c6f5",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "49ae056e-653d-42d6-a71a-4e22a44f30f3",
+      "name": "Read All Cases",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -11824,
+        416
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json['Status'].toString().trim().toUpperCase() }}",
+              "value2": "NEW"
+            }
+          ]
+        }
+      },
+      "id": "acb3d3ed-d209-4972-a157-b55a15fc7150",
+      "name": "IF - Has New Cases",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -11568,
+        416
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c00f249f-b6ee-4e3a-9f0a-db4902598f97",
+      "name": "Stop - No New Cases",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -11344,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const lawyerMap = {\n  'H1B': 'namrata@s3ktech.ai',\n  'L1':  'visputenamrata3@outlook.com',\n  'OPT': 'namrata.vispute@vit.edu.in',\n  'O1':  'lawyer.o1@lawfirm.com',\n  'TN':  'lawyer.tn@lawfirm.com'\n};\n\nconst d = $input.item.json;\nconst vt = (d['Visa_Type'] || 'H1B').toString().trim();\nconst existing = (d['Assigned_Lawyer_Email'] || '').toString().trim();\nconst assigned = existing || lawyerMap[vt] || 'namrata@s3ktech.ai';\n\nreturn {\n  json: {\n    Case_ID:               (d['Case_ID']               || '').toString().trim(),\n    Employee_Name:         (d['Employee_Name']         || '').toString().trim(),\n    Employee_Email:        (d['Employee_Email']        || '').toString().trim(),\n    Manager_Email:         (d['Manager_Email']         || '').toString().trim(),\n    HR_Email:              (d['HR_Email']               || '').toString().trim(),\n    Assigned_Lawyer_Email: assigned,\n    Visa_Type:             vt,\n    Priority:              (d['Priority']               || 'Normal').toString().trim(),\n    Filing_Deadline:       (d['Filing_Deadline']       || '').toString().trim(),\n    Documents_Submitted:   (d['Documents_Submitted']   || 'No').toString().trim().toLowerCase(),\n    Docs_Complete:         (d['Docs_Complete']         || 'No').toString().trim().toLowerCase(),\n    USCIS_Decision:        (d['USCIS_Decision']        || 'Pending').toString().trim(),\n    RFE_Due_Date:          (d['RFE_Due_Date']          || '').toString().trim(),\n    Reminder_Count:        parseInt(d['Reminder_Count'] || '0'),\n    Rework_Count:          parseInt(d['Rework_Count']   || '0'),\n    Status:                (d['Status']                 || '').toString().trim()\n  }\n};"
+      },
+      "id": "e3564759-8295-46d0-97d9-6ae25e0863a6",
+      "name": "Assign Lawyer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -11344,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "emailContext",
+              "displayName": "emailContext",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "64a5da8c-884b-486a-99aa-fcf3f0406b88",
+      "name": "Update Sheet - Lawyer Assigned",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -11088,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $json['Employee_Email'] }}",
+        "subject": "={{ $json.emailContext === 'rfe' ? '[URGENT-RFE] Additional Documents Required — Case ' + $json.caseId : $json.emailContext === 'rework' ? '[Rework Required] Resubmit Documents — Case ' + $json.caseId : '[Action Required] Document Submission — Case ' + $json.caseId }}",
+        "text": "=Dear {{ $json['Employee_Name'] }},\n\nYour visa case has been opened and a lawyer has been assigned.\n\nCase ID    : {{ $json['Case_ID'] }}\nVisa Type  : {{ $json['Visa_Type'] }}\nDeadline   : {{ $json['Filing_Deadline'] }}\nLawyer     : {{ $json['Assigned_Lawyer_Email'] }}\n\nPlease submit the following documents within 5 business days:\n  1. Passport (all pages)\n  2. I-94 / Status Document\n  3. Educational Certificates\n  4. Offer Letter\n  5. Previous Visa Copies\n  6. Signed Declaration Form\n\nUpload Here: [Google Drive Link]\n\nHR Immigration Team",
+        "options": {}
+      },
+      "id": "abd34d29-1e41-4e98-839a-689a697c8897",
+      "name": "Send Document Request Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -10848,
+        240
+      ],
+      "webhookId": "37e4c9ef-ea3f-4d09-9b56-5ae2a2c5e52e",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "col_17",
+              "displayName": "col_17",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e0e25d2e-5778-4857-956e-a28e735a7cc0",
+      "name": "Update Sheet - Docs Pending",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -10608,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "cafa2504-4b70-48c8-a420-73898c3f0c86",
+      "name": "Wait 24hrs - Submission",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -10368,
+        240
+      ],
+      "webhookId": "35db7731-2b16-4bf1-8490-c9a73b388dd2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "cfbc1355-33dc-4614-b7c5-2e9240b2064f",
+      "name": "Re-Read Cases Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -10176,
+        240
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const d = item.json;\n  return {\n    json: {\n      Case_ID:               (d['Case_ID']               || '').toString().trim(),\n      Employee_Name:         (d['Employee_Name']         || '').toString().trim(),\n      Employee_Email:        (d['Employee_Email']        || '').toString().trim(),\n      Manager_Email:         (d['Manager_Email']         || '').toString().trim(),\n      HR_Email:              (d['HR_Email']               || '').toString().trim(),\n      Assigned_Lawyer_Email: (d['Assigned_Lawyer_Email'] || '').toString().trim(),\n      Visa_Type:             (d['Visa_Type']              || '').toString().trim(),\n      Priority:              (d['Priority']               || 'Normal').toString().trim(),\n      Filing_Deadline:       (d['Filing_Deadline']       || '').toString().trim(),\n      Documents_Submitted:   (d['Documents_Submitted']   || 'No').toString().trim().toLowerCase(),\n      Docs_Complete:         (d['Docs_Complete']         || 'No').toString().trim().toLowerCase(),\n      USCIS_Decision:        (d['USCIS_Decision']        || 'Pending').toString().trim(),\n      RFE_Due_Date:          (d['RFE_Due_Date']          || '').toString().trim(),\n      Reminder_Count:        parseInt(d['Reminder_Count'] || '0'),\n      Rework_Count:          parseInt(d['Rework_Count']   || '0'),\n      Status:                (d['Status']                 || '').toString().trim()\n    }\n  };\n});"
+      },
+      "id": "7d76f89f-861a-4d64-b535-03464a7631af",
+      "name": "Match Case by ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9968,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json['Documents_Submitted'].toString().toLowerCase() }}",
+              "value2": "yes"
+            }
+          ]
+        }
+      },
+      "id": "91aa51e6-a4b1-4271-a388-70e5150b38cf",
+      "name": "IF - Docs Submitted",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -9744,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "=={{ $json['Reminder_Count'] }}",
+              "operation": "largerEqual",
+              "value2": 3
+            }
+          ]
+        }
+      },
+      "id": "eaf0fa20-69c4-466d-8d77-48ac34abe19c",
+      "name": "IF - Max Reminders",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -9296,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $json['HR_Email'] }}",
+        "subject": "=[ESCALATION] Employee Unresponsive — Case {{ $json['Case_ID'] }}",
+        "text": "=HR Manager,\n\nEmployee {{ $json['Employee_Name'] }} has not submitted \nvisa documents after 3 reminders for Case {{ $json['Case_ID'] }}.\n\nPlease intervene directly.\n\nEmployee Email  : {{ $json['Employee_Email'] }}\nVisa Type       : {{ $json['Visa_Type'] }}\nFiling Deadline : {{ $json['Filing_Deadline'] }}\nLawyer Assigned : {{ $json['Assigned_Lawyer_Email'] }}\n\nHR Immigration System (Automated)",
+        "options": {}
+      },
+      "id": "bbbebfc4-329d-47db-b183-f65a9c47bfbb",
+      "name": "Send Escalation Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -9120,
+        304
+      ],
+      "webhookId": "2ceab8f1-fe85-4c77-a0a8-2e7dae747639",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $json['Employee_Email'] }}",
+        "subject": "=[REMINDER {{ $json['Reminder_Count'] }}/3] Documents Pending — Case {{ $json['Case_ID'] }}",
+        "text": "=Dear {{ $json['Employee_Name'] }},\n\nThis is Reminder #{{ $json['Reminder_Count'] }} regarding \nyour pending visa documents for Case {{ $json['Case_ID'] }}.\n\nVisa Type       : {{ $json['Visa_Type'] }}\nFiling Deadline : {{ $json['Filing_Deadline'] }}\n\nRequired Documents:\n  1. Passport (all pages)\n  2. I-94 / Status Document\n  3. Educational Certificates\n  4. Offer Letter\n  5. Previous Visa Copies\n  6. Signed Declaration Form\n\nUpload Here: [Google Drive Link]\n\nHR Immigration Team",
+        "options": {}
+      },
+      "id": "980738dd-db4f-4222-96b9-7710cebe328b",
+      "name": "Send Reminder Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -9104,
+        608
+      ],
+      "webhookId": "a62b5bb8-2d17-40c0-93a2-59b61c07f70a",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "col_17",
+              "displayName": "col_17",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "emailContext",
+              "displayName": "emailContext",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "0d1da6a4-b17e-4e60-81e8-718009a4a419",
+      "name": "Update Reminder Count",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -8880,
+        608
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $json['Assigned_Lawyer_Email'] }}",
+        "subject": "=[Review Needed] {{ $json['Visa_Type'] }} Docs Ready — Case {{ $json['Case_ID'] }}",
+        "text": "=Dear Counsel,\n\nDocuments are ready for review.\n\nEmployee   : {{ $json['Employee_Name'] }}\nCase ID    : {{ $json['Case_ID'] }}\nVisa Type  : {{ $json['Visa_Type'] }}\nPriority   : {{ $json['Priority'] }}\nDeadline   : {{ $json['Filing_Deadline'] }}\n\nPlease review and update tracker:\n  - Docs_Complete: Yes / No\n  - Add rework notes if No\n\nTracker : [Sheet Link]\nDrive   : [Drive Link]\n\nHR Immigration System",
+        "options": {}
+      },
+      "id": "e1f9b5dd-b0f9-4e8a-89c7-553c79a71508",
+      "name": "Send Lawyer Review Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -9536,
+        80
+      ],
+      "webhookId": "d196222d-fc0b-4ee0-9913-32165b33f64b",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "col_17",
+              "displayName": "col_17",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "3a547174-a971-445f-a7c3-94bf64bb1350",
+      "name": "Update Sheet - Lawyer Review",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -9312,
+        80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "unit": "seconds"
+      },
+      "id": "6da60d01-9085-454a-97a4-f4ff8e224c37",
+      "name": "Wait 48hrs - Lawyer Review",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -9072,
+        80
+      ],
+      "webhookId": "fa42f58f-c813-4f3e-94a3-5d881f705383"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "64e3a1b0-0ac3-40c3-acbb-2277032274a1",
+      "name": "Re-Read Sheet for Review",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -8880,
+        80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const d = item.json;\n  return {\n    json: {\n      Case_ID:               (d['Case_ID']               || '').toString().trim(),\n      Employee_Name:         (d['Employee_Name']         || '').toString().trim(),\n      Employee_Email:        (d['Employee_Email']        || '').toString().trim(),\n      Manager_Email:         (d['Manager_Email']         || '').toString().trim(),\n      HR_Email:              (d['HR_Email']               || '').toString().trim(),\n      Assigned_Lawyer_Email: (d['Assigned_Lawyer_Email'] || '').toString().trim(),\n      Visa_Type:             (d['Visa_Type']              || '').toString().trim(),\n      Priority:              (d['Priority']               || 'Normal').toString().trim(),\n      Filing_Deadline:       (d['Filing_Deadline']       || '').toString().trim(),\n      Documents_Submitted:   (d['Documents_Submitted']   || 'no').toString().trim().toLowerCase(),\n      Docs_Complete:         (d['Docs_Complete']         || 'no').toString().trim().toLowerCase(),\n      USCIS_Decision:        (d['USCIS_Decision']        || 'Pending').toString().trim(),\n      RFE_Due_Date:          (d['RFE_Due_Date']          || '').toString().trim(),\n      Reminder_Count:        parseInt(d['Reminder_Count'] || '0'),\n      Rework_Count:          parseInt(d['Rework_Count']   || '0'),\n      Status:                (d['Status']                 || '').toString().trim()\n    }\n  };\n});"
+      },
+      "id": "88176465-dfb4-48e8-bae8-9c7f3504c609",
+      "name": "Match Case for Review",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -8656,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json['Docs_Complete'].toString().toLowerCase() }}",
+              "value2": "yes"
+            }
+          ]
+        }
+      },
+      "id": "6336dbd5-c594-4625-9205-89a1ecff8156",
+      "name": "IF - Docs Complete",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -8416,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Immigration_Cases",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f1aba07b-8737-45ab-ba43-bdfb7a574923",
+      "name": "Update Sheet - Rework",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -7968,
+        256
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $json['Assigned_Lawyer_Email'] }}",
+        "subject": "=[GO - FILE NOW] {{ $json['Visa_Type'] }} Petition — Case {{ $json['Case_ID'] }}",
+        "text": "=Dear Counsel,\n\nAll documents are verified. Please proceed with filing.\n\nEmployee  : {{ $json['Employee_Name'] }}\nCase ID   : {{ $json['Case_ID'] }}\nVisa Type : {{ $json['Visa_Type'] }}\nPriority  : {{ $json['Priority'] }}\nDeadline  : {{ $json['Filing_Deadline'] }}\n\nPost-filing, update tracker with:\n  - USCIS Receipt Number\n  - USCIS_Decision = Pending\n\nTracker: [Sheet Link]\n\nHR Immigration System",
+        "options": {}
+      },
+      "id": "1e542579-1464-4db3-b48e-c5b7b84ba0e3",
+      "name": "Send File Case Email - Lawyer",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -8208,
+        -80
+      ],
+      "webhookId": "7d1c173b-4e4a-4644-b8b4-b59d0f304a9b",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $('IF - Docs Complete').item.json['Employee_Email'] }}",
+        "subject": "=[Filed] Your {{ $('IF - Docs Complete').item.json['Visa_Type'] }} Petition Submitted — Case {{ $('IF - Docs Complete').item.json['Case_ID'] }}",
+        "text": "=Dear {{ $('IF - Docs Complete').item.json['Employee_Name'] }},\n\nYour {{ $('IF - Docs Complete').item.json['Visa_Type'] }} visa petition \nhas been officially filed with USCIS.\n\nCase ID  : {{ $('IF - Docs Complete').item.json['Case_ID'] }}\nDeadline : {{ $('IF - Docs Complete').item.json['Filing_Deadline'] }}\nLawyer   : {{ $('IF - Docs Complete').item.json['Assigned_Lawyer_Email'] }}\n\nNo action needed. You will be notified on the decision.\n\nHR Immigration Team",
+        "options": {}
+      },
+      "id": "7c42b2c3-01c3-4623-a746-7abe4834c3ce",
+      "name": "Send File Case Email - Employee",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -7968,
+        -80
+      ],
+      "webhookId": "7b5bbd1f-cf89-4684-9fa5-70c5397d6b96",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "col_17",
+              "displayName": "col_17",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "39f41587-b954-425c-861c-dce12e5d69b3",
+      "name": "Update Sheet - Filed",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -7760,
+        -80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "seconds"
+      },
+      "id": "d05e836d-491b-463b-8490-afa009abf8e7",
+      "name": "Wait 7 Days - USCIS Decision",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -7520,
+        -80
+      ],
+      "webhookId": "dcea3077-42ee-44c3-a7eb-0c2cbf2d8e68"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "5d7c0f7e-1cb7-451c-aae0-2b0e07290604",
+      "name": "Re-Read Sheet for Decision",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -7328,
+        -80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const d = item.json;\n  return {\n    json: {\n      Case_ID:               (d['Case_ID']               || '').toString().trim(),\n      Employee_Name:         (d['Employee_Name']         || '').toString().trim(),\n      Employee_Email:        (d['Employee_Email']        || '').toString().trim(),\n      Manager_Email:         (d['Manager_Email']         || '').toString().trim(),\n      HR_Email:              (d['HR_Email']               || '').toString().trim(),\n      Assigned_Lawyer_Email: (d['Assigned_Lawyer_Email'] || '').toString().trim(),\n      Visa_Type:             (d['Visa_Type']              || '').toString().trim(),\n      Priority:              (d['Priority']               || 'Normal').toString().trim(),\n      Filing_Deadline:       (d['Filing_Deadline']       || '').toString().trim(),\n      Documents_Submitted:   (d['Documents_Submitted']   || 'no').toString().trim().toLowerCase(),\n      Docs_Complete:         (d['Docs_Complete']         || 'no').toString().trim().toLowerCase(),\n      USCIS_Decision:        (d['USCIS_Decision']        || 'Pending').toString().trim(),\n      RFE_Due_Date:          (d['RFE_Due_Date']          || '').toString().trim(),\n      Reminder_Count:        parseInt(d['Reminder_Count'] || '0'),\n      Rework_Count:          parseInt(d['Rework_Count']   || '0'),\n      Status:                (d['Status']                 || '').toString().trim()\n    }\n  };\n});"
+      },
+      "id": "017b024e-0312-4f2d-98fa-324ba085763a",
+      "name": "Match Case for Decision",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7056,
+        -80
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json['USCIS_Decision'] }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "Approved"
+            },
+            {
+              "value2": "RFE",
+              "output": 1
+            },
+            {
+              "value2": "Rejected",
+              "output": 2
+            }
+          ]
+        },
+        "fallbackOutput": 3
+      },
+      "id": "8a32fb2e-9bdb-4b58-bab7-7bd14d05c873",
+      "name": "Switch - USCIS Decision",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -6848,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $('Match Case for Decision').item.json['Employee_Email'] }}",
+        "subject": "=🎉 [APPROVED] Your {{ $('Match Case for Decision').item.json['Visa_Type'] }} Visa — Case {{ $('Match Case for Decision').item.json['Case_ID'] }}",
+        "text": "=Dear {{ $('Match Case for Decision').item.json['Employee_Name'] }},\n\nCongratulations! Your {{ $('Match Case for Decision').item.json['Visa_Type'] }} \npetition has been APPROVED by USCIS.\n\nCase ID  : {{ $('Match Case for Decision').item.json['Case_ID'] }}\nDeadline : {{ $('Match Case for Decision').item.json['Filing_Deadline'] }}\n\nYour I-797 Approval Notice will be mailed to address on file.\n\nNext Steps:\n  - HR will coordinate visa stamping if required\n  - Keep your approval notice safe at all times\n  - Work authorization valid per dates on notice\n\nHR Immigration Team",
+        "options": {}
+      },
+      "id": "f319a6f1-18a0-425a-9485-2842cc160ed1",
+      "name": "Send Approval Email - Employee",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -6624,
+        -64
+      ],
+      "webhookId": "2be62ddb-578e-481b-8b56-efd2f54d009c",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $('Match Case for Decision').item.json['Employee_Email'] }}",
+        "subject": "=[Next Steps] Post-Approval Checklist — Case {{ $('Match Case for Decision').item.json['Case_ID'] }}",
+        "text": "=Dear {{ $('Match Case for Decision').item.json['Employee_Name'] }},\n\nNow that your visa is approved, please action the following:\n\n  ✅ I-797 Approval Notice (keep original safe)\n  ✅ Updated I-9 Form (bring originals to HR)\n  ✅ Passport Stamp if consular processing needed\n  ✅ Travel Authorization Letter if applicable\n\nPlease visit HR within 3 business days with originals.\n\nHR Immigration Team",
+        "options": {}
+      },
+      "id": "3ccce4a4-bdd0-40b1-a841-e7b5c8ac80ac",
+      "name": "Send Post-Approval Docs Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -6416,
+        -64
+      ],
+      "webhookId": "319c2e3f-8b15-4024-b297-0e393f275bb6",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "col_17",
+              "displayName": "col_17",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "2a736649-fec8-4c95-9c12-261fbb6f0995",
+      "name": "Update Sheet - Approved",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -6176,
+        -64
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "emailContext",
+              "stringValue": "rfe"
+            },
+            {
+              "name": "Name",
+              "stringValue": "=Case_ID"
+            }
+          ]
+        },
+        "include": "except",
+        "options": {}
+      },
+      "id": "9656271e-23f8-4c88-8d5f-8b7d05414cbc",
+      "name": "Set RFE Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        -6624,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "col_17",
+              "displayName": "col_17",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "e602c3a8-f8b7-4d2c-b8e9-65a845c2140b",
+      "name": "Update Sheet - RFE",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -6432,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $('Match Case for Decision').item.json['Employee_Email'] }}",
+        "subject": "=[Important] Regarding Your {{ $('Match Case for Decision').item.json['Visa_Type'] }} Case — {{ $('Match Case for Decision').item.json['Case_ID'] }}",
+        "text": "=Dear {{ $('Match Case for Decision').item.json['Employee_Name'] }},\n\nWe regret to inform you that USCIS has not approved \nyour {{ $('Match Case for Decision').item.json['Visa_Type'] }} petition.\n\nYour HR team and legal counsel will contact you within \n1-2 business days to discuss options including:\n  - Motion to Reopen (MTR)\n  - Appeal options\n  - Alternative visa pathways\n\nPlease do not make international travel plans until \nfurther notice.\n\nHR Immigration Team",
+        "options": {}
+      },
+      "id": "438285ab-aa60-42b1-88b1-a2e1657232d4",
+      "name": "Send Rejection Email - Employee",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -6608,
+        352
+      ],
+      "webhookId": "2349b8f5-4e1d-483f-8db5-fd715caa0f93",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "hr-immigration@company.com",
+        "toEmail": "={{ $('Match Case for Decision').item.json['HR_Email'] }}",
+        "subject": "=[URGENT] Visa Rejected — {{ $('Match Case for Decision').item.json['Employee_Name'] }} | Case {{ $('Match Case for Decision').item.json['Case_ID'] }}",
+        "text": "=Team,\n\nUSCIS has REJECTED the {{ $('Match Case for Decision').item.json['Visa_Type'] }} \npetition for {{ $('Match Case for Decision').item.json['Employee_Name'] }} \n(Case {{ $('Match Case for Decision').item.json['Case_ID'] }}).\n\nImmediate Actions Required:\n  1. Consult counsel on MTR / appeal eligibility\n  2. Evaluate alternative visa categories\n  3. Review employee work auth status URGENTLY\n\nLawyer: {{ $('Match Case for Decision').item.json['Assigned_Lawyer_Email'] }}\n\nHR Immigration System",
+        "options": {}
+      },
+      "id": "812e116c-e86a-4a28-9c1d-4aa99c0c4cdd",
+      "name": "Send Rejection Email - HR Manager",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        -6416,
+        352
+      ],
+      "webhookId": "e8ad7f08-d8a8-4d02-80aa-2aee7dfdb283",
+      "credentials": {
+        "smtp": {
+          "id": "eQIdeMimGKXkak4D",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "employee cases ",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Case_ID"
+          ],
+          "schema": [
+            {
+              "id": "Case_ID",
+              "displayName": "Case_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Name",
+              "displayName": "Employee_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Employee_Email",
+              "displayName": "Employee_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Manager_Email",
+              "displayName": "Manager_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "HR_Email",
+              "displayName": "HR_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Assigned_Lawyer_Email",
+              "displayName": "Assigned_Lawyer_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Visa_Type",
+              "displayName": "Visa_Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Filing_Deadline",
+              "displayName": "Filing_Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Documents_Submitted",
+              "displayName": "Documents_Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Docs_Complete",
+              "displayName": "Docs_Complete",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "USCIS_Decision",
+              "displayName": "USCIS_Decision",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RFE_Due_Date",
+              "displayName": "RFE_Due_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reminder_Count",
+              "displayName": "Reminder_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rework_Count",
+              "displayName": "Rework_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "col_17",
+              "displayName": "col_17",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lawyerEmail",
+              "displayName": "lawyerEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "32ddd5c8-af55-46c4-b761-2d762377c5b0",
+      "name": "Update Sheet - Rejected",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -6176,
+        352
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1_VmTrchHa6mBJ9xaG6_m8PeBroCDTR2MWokWeHFA0M0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Immigration_Audit_Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "accepted",
+              "displayName": "accepted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "rejected",
+              "displayName": "rejected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ehlo",
+              "displayName": "ehlo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "envelopeTime",
+              "displayName": "envelopeTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "messageTime",
+              "displayName": "messageTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "messageSize",
+              "displayName": "messageSize",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "response",
+              "displayName": "response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "envelope",
+              "displayName": "envelope",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "messageId",
+              "displayName": "messageId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a48eeac6-8bb2-4809-aadd-a97a464ca308",
+      "name": "Append Audit Log",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -5936,
+        144
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "cH122wbLtpOgjzvl",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "f5a8708c-2cae-4f1a-9231-f8189e2d851a",
+      "name": "END",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -5712,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $input.item.json;\n\nreturn {\n  json: {\n    Case_ID:               (d['Case_ID']               || '').toString().trim(),\n    Employee_Name:         (d['Employee_Name']         || '').toString().trim(),\n    Employee_Email:        (d['Employee_Email']        || '').toString().trim(),\n    Manager_Email:         (d['Manager_Email']         || '').toString().trim(),\n    HR_Email:              (d['HR_Email']               || '').toString().trim(),\n    Assigned_Lawyer_Email: (d['Assigned_Lawyer_Email'] || '').toString().trim(),\n    Visa_Type:             (d['Visa_Type']              || '').toString().trim(),\n    Priority:              (d['Priority']               || 'Normal').toString().trim(),\n    Filing_Deadline:       (d['Filing_Deadline']       || '').toString().trim(),\n    Documents_Submitted:   'no',\n    Docs_Complete:         'no',\n    USCIS_Decision:        (d['USCIS_Decision']        || 'Pending').toString().trim(),\n    RFE_Due_Date:          (d['RFE_Due_Date']          || '').toString().trim(),\n    Reminder_Count:        parseInt(d['Reminder_Count'] || '0'),\n    Rework_Count:          parseInt(d['Rework_Count']   || '0') + 1,\n    Status:                'REWORK_REQUESTED',\n    emailContext:          'rework'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -8192,
+        256
+      ],
+      "id": "ed9ed13d-bdae-4143-a2f9-f9fd6f7f2ee9",
+      "name": "Set Rework Context"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const d = $input.item.json;\nreturn {\n  json: {\n    Case_ID:               (d['Case_ID']               || '').toString().trim(),\n    Employee_Name:         (d['Employee_Name']         || '').toString().trim(),\n    Employee_Email:        (d['Employee_Email']        || '').toString().trim(),\n    Manager_Email:         (d['Manager_Email']         || '').toString().trim(),\n    HR_Email:              (d['HR_Email']               || '').toString().trim(),\n    Assigned_Lawyer_Email: (d['Assigned_Lawyer_Email'] || '').toString().trim(),\n    Visa_Type:             (d['Visa_Type']              || '').toString().trim(),\n    Priority:              (d['Priority']               || 'Normal').toString().trim(),\n    Filing_Deadline:       (d['Filing_Deadline']       || '').toString().trim(),\n    Documents_Submitted:   (d['Documents_Submitted']   || 'no').toString().trim().toLowerCase(),\n    Reminder_Count:        parseInt(d['Reminder_Count'] || '0') + 1,\n    Rework_Count:          parseInt(d['Rework_Count']   || '0'),\n    Status:                (d['Status']                 || '').toString().trim()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9552,
+        464
+      ],
+      "id": "9a201e70-2259-4457-aae6-14a78335c12c",
+      "name": "Increment Reminder Count node"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read All Cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Cases": {
+      "main": [
+        [
+          {
+            "node": "IF - Has New Cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Has New Cases": {
+      "main": [
+        [
+          {
+            "node": "Assign Lawyer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop - No New Cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign Lawyer": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - Lawyer Assigned",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - Lawyer Assigned": {
+      "main": [
+        [
+          {
+            "node": "Send Document Request Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Document Request Email": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - Docs Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - Docs Pending": {
+      "main": [
+        [
+          {
+            "node": "Wait 24hrs - Submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 24hrs - Submission": {
+      "main": [
+        [
+          {
+            "node": "Re-Read Cases Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-Read Cases Sheet": {
+      "main": [
+        [
+          {
+            "node": "Match Case by ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Case by ID": {
+      "main": [
+        [
+          {
+            "node": "IF - Docs Submitted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Docs Submitted": {
+      "main": [
+        [
+          {
+            "node": "Send Lawyer Review Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Increment Reminder Count node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Max Reminders": {
+      "main": [
+        [
+          {
+            "node": "Send Escalation Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Reminder Email": {
+      "main": [
+        [
+          {
+            "node": "Update Reminder Count",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Reminder Count": {
+      "main": [
+        [
+          {
+            "node": "Wait 24hrs - Submission",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Lawyer Review Email": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - Lawyer Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - Lawyer Review": {
+      "main": [
+        [
+          {
+            "node": "Wait 48hrs - Lawyer Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 48hrs - Lawyer Review": {
+      "main": [
+        [
+          {
+            "node": "Re-Read Sheet for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-Read Sheet for Review": {
+      "main": [
+        [
+          {
+            "node": "Match Case for Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Case for Review": {
+      "main": [
+        [
+          {
+            "node": "IF - Docs Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Docs Complete": {
+      "main": [
+        [
+          {
+            "node": "Send File Case Email - Lawyer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Rework Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - Rework": {
+      "main": [
+        [
+          {
+            "node": "Send Document Request Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send File Case Email - Lawyer": {
+      "main": [
+        [
+          {
+            "node": "Send File Case Email - Employee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send File Case Email - Employee": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - Filed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - Filed": {
+      "main": [
+        [
+          {
+            "node": "Wait 7 Days - USCIS Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 7 Days - USCIS Decision": {
+      "main": [
+        [
+          {
+            "node": "Re-Read Sheet for Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Re-Read Sheet for Decision": {
+      "main": [
+        [
+          {
+            "node": "Match Case for Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match Case for Decision": {
+      "main": [
+        [
+          {
+            "node": "Switch - USCIS Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - USCIS Decision": {
+      "main": [
+        [
+          {
+            "node": "Send Approval Email - Employee",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set RFE Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Send Rejection Email - Employee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Approval Email - Employee": {
+      "main": [
+        [
+          {
+            "node": "Send Post-Approval Docs Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Post-Approval Docs Email": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - Approved": {
+      "main": [
+        [
+          {
+            "node": "Append Audit Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set RFE Context": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - RFE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - RFE": {
+      "main": [
+        [
+          {
+            "node": "Send Document Request Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Rejection Email - Employee": {
+      "main": [
+        [
+          {
+            "node": "Send Rejection Email - HR Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Rejection Email - HR Manager": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet - Rejected": {
+      "main": [
+        [
+          {
+            "node": "Append Audit Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Audit Log": {
+      "main": [
+        [
+          {
+            "node": "END",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Rework Context": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet - Rework",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increment Reminder Count node": {
+      "main": [
+        [
+          {
+            "node": "IF - Max Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a3278e44-d5f1-4bc5-b122-3fe973751dd8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9c1caee97a30863bfefa58b30b8e7c24338675fe1d8a307f7bec136a7cb527a9"
+  },
+  "id": "q5sogJ4FKgQx6wdJ",
+  "tags": []
+}
